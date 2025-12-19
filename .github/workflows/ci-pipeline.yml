@@ -29,13 +29,13 @@ jobs:
             cat > src/app.py << 'EOF'
 from flask import Flask
 
-app = Flask(name)
+app = Flask(__name__)
 
 @app.route('/')
 def home():
     return "Hello, World!"
 
-if name == 'main':
+if __name__ == '__main__':
     app.run(debug=True)
 EOF
           fi
@@ -70,13 +70,13 @@ EOF
             cat > src/app.py << 'EOF'
 from flask import Flask
 
-app = Flask(name)
+app = Flask(__name__)
 
 @app.route('/')
 def home():
     return "Hello, World!"
 
-if name == 'main':
+if __name__ == '__main__':
     app.run(debug=True)
 EOF
           fi
@@ -130,13 +130,13 @@ EOF
             cat > src/app.py << 'EOF'
 from flask import Flask
 
-app = Flask(name)
+app = Flask(__name__)
 
 @app.route('/')
 def home():
     return "Hello, World!"
 
-if name == 'main':
+if __name__ == '__main__':
     app.run(debug=True)
 EOF
           fi
@@ -154,7 +154,8 @@ EOF
           name: app-dist
           path: dist/
           retention-days: 5
-notify:
+
+  notify:
     runs-on: ubuntu-latest
     needs: [lint-and-validate, test, build]
     if: always()
