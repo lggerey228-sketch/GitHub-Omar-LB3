@@ -19,18 +19,10 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Create requirements.txt if not exists
+      - name: Install linter dependencies
         run: |
-          if [ ! -f requirements.txt ]; then
-            echo "Flask==2.3.3" > requirements.txt
-            echo "pytest==7.4.3" >> requirements.txt
-            echo "pytest-cov==4.1.0" >> requirements.txt
-            echo "flake8==6.1.0" >> requirements.txt
-            echo "black==23.11.0" >> requirements.txt
-          fi
-
-      - name: Install dependencies
-        run: pip install -r requirements.txt
+          python -m pip install --upgrade pip
+          pip install flake8 black
 
       - name: Run linter (flake8)
         run: flake8 . --exclude=tests,.github,venv,env --count --max-complexity=10
@@ -47,9 +39,10 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Create requirements.txt if not exists
+      - name: Create requirements.txt if missing
         run: |
           if [ ! -f requirements.txt ]; then
+            echo "Создание файла requirements.txt..."
             echo "Flask==2.3.3" > requirements.txt
             echo "pytest==7.4.3" >> requirements.txt
             echo "pytest-cov==4.1.0" >> requirements.txt
@@ -62,7 +55,7 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          python -m pytest tests/ -v --cov=. --cov-report=xml
+          python -m pytest . -v --cov=. --cov-report=xml
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
@@ -99,6 +92,6 @@ jobs:
     needs: [lint-and-validate, test, build]
     if: always()
     steps:
-    - name: Notify pipeline completion
-      run: |
-        echo "CI/CD pipeline finished with status: ${{ job.status }}"
+      - name: Notify pipeline completion
+        run: |
+          echo "CI/CD pipeline finished with status: ${{ job.status }}"
