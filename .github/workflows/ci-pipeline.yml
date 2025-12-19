@@ -21,9 +21,7 @@ jobs:
 
       - name: Create project structure
         run: |
-          # Создаем папку src, если ее нет
           mkdir -p src
-          # Создаем app.py в src/ если его нет
           if [ ! -f src/app.py ]; then
             echo "Создание файла src/app.py..."
             cat > src/app.py << 'EOF'
@@ -62,11 +60,8 @@ EOF
 
       - name: Create project structure
         run: |
-          # Создаем папку src, если ее нет
           mkdir -p src
-          # Создаем app.py в src/ если его нет
           if [ ! -f src/app.py ]; then
-            echo "Создание файла src/app.py..."
             cat > src/app.py << 'EOF'
 from flask import Flask
 
@@ -80,7 +75,6 @@ if __name__ == '__main__':
     app.run(debug=True)
 EOF
           fi
-          # Создаем requirements.txt если его нет
           if [ ! -f requirements.txt ]; then
             echo "Создание файла requirements.txt..."
             echo "Flask==2.3.3" > requirements.txt
@@ -91,17 +85,14 @@ EOF
           fi
 
       - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
+        run: pip install -r requirements.txt
 
       - name: Run tests with coverage
         run: |
-          echo "Запуск тестов из .github/tests/..."
-          # Проверяем, есть ли тесты в .github/tests
           if [ -d .github/tests ]; then
             python -m pytest .github/tests/ -v --cov=src --cov-report=xml --cov-fail-under=0
           else
-            echo "Тесты не найдены в .github/tests/, создаем минимальный отчет..."
+            echo "Тесты не найдены, создаем минимальный отчет..."
             echo '<?xml version="1.0" encoding="UTF-8"?><coverage><sources/><packages/></coverage>' > coverage.xml
           fi
 
@@ -122,11 +113,8 @@ EOF
 
       - name: Create project structure
         run: |
-          # Создаем папку src, если ее нет
           mkdir -p src
-          # Создаем app.py в src/ если его нет
           if [ ! -f src/app.py ]; then
-            echo "Создание файла src/app.py..."
             cat > src/app.py << 'EOF'
 from flask import Flask
 
@@ -161,5 +149,4 @@ EOF
     if: always()
     steps:
       - name: Notify pipeline completion
-        run: |
-          echo "CI/CD pipeline finished with status: ${{ job.status }}"
+        run: echo "CI/CD pipeline finished with status: ${{ job.status }}"
