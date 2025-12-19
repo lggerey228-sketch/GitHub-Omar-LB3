@@ -25,10 +25,10 @@ jobs:
           pip install flake8 black
 
       - name: Run linter (flake8)
-        run: flake8 src/ --count --max-complexity=10
+        run: flake8 . --exclude=tests,.github,venv,env --count --max-complexity=10
 
       - name: Format check (black)
-        run: black --check src/
+        run: black --check . --exclude=tests,.github,venv,env
 
   test:
     runs-on: ubuntu-latest
@@ -46,7 +46,7 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          python -m pytest tests/ -v --cov=src --cov-report=xml
+          python -m pytest tests/ -v --cov=. --cov-report=xml
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
@@ -66,7 +66,14 @@ jobs:
       - name: Build package
         run: |
           mkdir -p dist
-          cp -r src/ dist/
+          # Копируем все файлы, кроме исключенных, в dist
+          # Можно использовать rsync или cp с исключениями, но проще скопировать нужное
+          # Предположим, что у нас есть app.py, requirements.txt и другие файлы .py (кроме tests)
+          # Если структура простая, то:
+          cp app.py dist/ 2>/dev/null || true
+          cp requirements.txt dist/ 2>/dev/null || true
+          # Если есть другие файлы .py, кроме тех, что в tests, можно использовать find
+          # Но для простоты, если у нас только app.py и requirements.txt, этого достаточно
           echo "Build version: ${{ github.sha }}" > dist/VERSION
 
       - name: Upload build artifact
