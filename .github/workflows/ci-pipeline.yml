@@ -28,7 +28,7 @@ jobs:
         run: flake8 . --exclude=tests,.github,venv,env --count --max-complexity=10
 
       - name: Format check (black)
-        run: black --check . --exclude=tests,.github,venv,env
+        run: black --check . --exclude='/(\.github|venv|env)/'
 
   test:
     runs-on: ubuntu-latest
@@ -66,14 +66,9 @@ jobs:
       - name: Build package
         run: |
           mkdir -p dist
-          # Копируем все файлы, кроме исключенных, в dist
-          # Можно использовать rsync или cp с исключениями, но проще скопировать нужное
-          # Предположим, что у нас есть app.py, requirements.txt и другие файлы .py (кроме tests)
-          # Если структура простая, то:
-          cp app.py dist/ 2>/dev/null || true
+          # Копируем все Python файлы, кроме тестов и .github
+          find . -name "*.py" -not -path "./tests/*" -not -path "./.github/*" -exec cp --parents {} dist/ \;
           cp requirements.txt dist/ 2>/dev/null || true
-          # Если есть другие файлы .py, кроме тех, что в tests, можно использовать find
-          # Но для простоты, если у нас только app.py и requirements.txt, этого достаточно
           echo "Build version: ${{ github.sha }}" > dist/VERSION
 
       - name: Upload build artifact
